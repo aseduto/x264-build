@@ -96,7 +96,7 @@ function build($configure, $plat, $config)
         return;
     }
 
-    if($buildConfiguration -ne '*') -and ($buildConfiguration -ne $config))
+    if(($buildConfiguration -ne '*') -and ($buildConfiguration -ne $config))
     {
         "Skip platform $plat. Target $buildConfiguration" | oh
         return;
