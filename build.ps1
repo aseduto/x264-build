@@ -2,7 +2,7 @@ param(
 	  $mysy = "C:\msys64"
 	, $mingw32 = "C:\msys64\mingw32"
 	, $mingw64 = "C:\msys64\mingw64"
-	, $src = "C:\tmp\x264-snapshot-20180829-2245-stable"
+	, $src = "./src/x264"
 )
 
 $ErrorActionPreference = "Stop";
