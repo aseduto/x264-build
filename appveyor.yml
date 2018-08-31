@@ -66,8 +66,8 @@ build_script:
 
 # scripts to run after build
 after_build:
-        - ps: 7z a "win-($env:configuration)-$($env:platform).zip" "build"; 
-        - ps: Push-AppveyorArtifact "win-$env:configuration-$($env:platform).zip"
+        - ps: 7z a "win-$($env:configuration)-$($env:platform).zip" "src/x264/build"; 
+        - ps: Push-AppveyorArtifact "win-$($env:configuration)-$($env:platform).zip"
         
 #---------------------------------#
 #       tests configuration       #

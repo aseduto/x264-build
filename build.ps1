@@ -7,7 +7,7 @@ param(
     , $buildConfiguration = "*"
 )
 
-#$ErrorActionPreference = "Stop";
+$ErrorActionPreference = "Stop";
 $my_dir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
 "BUILDING $buildPlatform $buildConfiguration" | oh
@@ -71,7 +71,7 @@ function log($name, $success, $msg, $file)
 {
     $outcome = 'Passed'
     if(-not $success)
-    {    $outcome = 'Failed'}
+    {$outcome = 'Failed'}
 
     if( (get-command Add-AppveyorTest -ea SilentlyContinue) -ne $null)
     {
@@ -108,12 +108,16 @@ function build($configure, $plat, $config)
 		Write-Error "FAILED $plat $config Configuration"
 	}
 	
-    $file = "$plat_$($config).txt";
-	bash -c "make V=1" > "$plat_$($config).txt"
-	if(0 -ne $LASTEXITCODE)
+    $file = "$($plat)_$($config).txt";
+$ErrorActionPreference = "SilentlyContinue";
+	bash -c "make V=1" > $file -ea 
+    $BASHEXIT = $LASTEXITCODE
+    "MAKE EXIT CODE: $BASHEXIT" | oh
+$ErrorActionPreference = "Stop";
+	if(0 -ne $BASHEXIT)
 	{
         $msg = "FAILED $plat $config Configuration"
-        if(-not (log "$plat_$($config)" $false $msg $file))
+        if(-not (log "$($plat)_$($config)" $false $msg $file))
         {
             Write-Error $msg
             return;
@@ -129,7 +133,7 @@ function build($configure, $plat, $config)
 		Write-Warning "FAILED $plat $config Clean"
 	}
 
-    log "$plat_$($config)" $true $msg $file
+    log "$($plat)_$($config)" $true $msg $file
 }
 
 function main()
@@ -145,6 +149,7 @@ function main()
 	$prefix = "i686-w64-mingw32-"
 	
 	patch_prefix $mingw32bin "strings" $prefix
+    patch_prefix $mingw32bin "strip" $prefix
 	
 	$dumpbinpath = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin"
 	
