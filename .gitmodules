@@ -1,0 +1,4 @@
+[submodule "src/x264"]
+	path = src/x264
+	url = http://git.videolan.org/git/x264.git
+	branch = stable

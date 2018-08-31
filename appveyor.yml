@@ -1,0 +1,97 @@
+
+# Notes:
+#   - Minimal appveyor.yml file is an empty file. All sections are optional.
+#   - Indent each level of configuration with 2 spaces. Do not use tabs!
+#   - All section names are case-sensitive.
+#   - Section names should be unique on each level.
+
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+# version format
+version: 0.0.{build}
+
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+# Build worker image (VM template)
+image: 
+  - Visual Studio 2015
+
+
+# scripts that run after cloning repository
+install:
+  - git submodule update --init --recursive
+  - 
+
+
+
+
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+# build platform, i.e. x86, x64, Any CPU. This setting is optional.
+platform:
+    - Win32 
+
+# to add several platforms to build matrix:
+#platform:
+#  - x86
+#  - Any CPU
+
+# build Configuration, i.e. Debug, Release, etc.
+configuration: Release
+
+
+
+# to run your custom scripts instead of automatic MSBuild
+build_script:
+  - ps: ./build.ps1
+# to disable automatic builds
+#build: off
+
+
+# scripts to run after build
+after_build:
+        - ps: 7z a "win-release-$($env:platform).zip" "./build"; 
+        - ps: Push-AppveyorArtifact "win-release-$($env:platform).zip"
+        
+#---------------------------------#
+#       tests configuration       #
+#---------------------------------#
+
+#test:
+  
+
+
+
+#---------------------------------#
+#     deployment configuration    #
+#---------------------------------#
+
+# providers: Local, FTP, WebDeploy, AzureCS, AzureBlob, S3, NuGet, Environment
+# provider names are case-sensitive!
+deploy:
+
+    # Deploy to GitHub Releases
+  - provider: GitHub
+    release: $(appveyor_repo_tag_name)
+    artifact:  win-release-$(PLATFORM).zip 
+    draft: true
+    prerelease: true
+    auth_token:
+        secure: 9yjv22hRjZGOLHgfKr8Z23OYU1Rlz+JSaYxZ8gJlF77DopqYpeyqo5hpL95Aiwnf
+    on:
+     APPVEYOR_REPO_TAG: true       # deploy on tag push only
+     CI_WINDOWS: true
+
+ 
+
+
+
+
