@@ -90,13 +90,13 @@ function log($name, $success, $msg, $file)
 
 function build($configure, $plat, $config)
 {
-    if(-not ($buildPlatform -eq '*') -or ($buildPlatform -ne $plat))
+    if(($buildPlatform -ne $plat) -and ($buildPlatform -ne '*'))
     {
         "Skip platform $plat. Target $buildPlatform" | oh
         return;
     }
 
-    if(-not ($buildConfiguration -eq '*') -or ($buildConfiguration -ne $config))
+    if($buildConfiguration -ne '*') -and ($buildConfiguration -ne $config))
     {
         "Skip platform $plat. Target $buildConfiguration" | oh
         return;
