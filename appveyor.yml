@@ -25,6 +25,7 @@ image:
 # scripts that run after cloning repository
 install:
   - git submodule update --init --recursive
+  - git submodule status
   - C:\msys64\usr\bin\pacman.exe -S --noconfirm --needed make
   - C:\msys64\usr\bin\pacman.exe -S --noconfirm --needed mingw64/mingw-w64-x86_64-gcc
   - C:\msys64\usr\bin\pacman.exe -S --noconfirm --needed mingw32/mingw-w64-i686-gcc

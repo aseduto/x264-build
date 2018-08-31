@@ -63,6 +63,27 @@ function collect($plat, $config)
 	& "$my_dir\gen-lib.ps1" $dll $arch $lib
 }
 
+function log($name, $success, $msg, $file)
+{
+    $outcome = 'Passed'
+    if(-not $success)
+    {    $outcome = 'Failed'}
+
+    if( (get-command Add-AppveyorTest -ea SilentlyContinue) -eq $null)
+    {
+        Push-AppveyorArtifact $file
+        Add-AppveyorTest -Name "$name" -Framework 'NUnit' -Filename 'build.ps1' -Outcome $outcome
+        return true;
+    }
+    else
+    {
+        msg | oh
+        return false;
+    }
+}
+
+#if( (get-command gyp -ea SilentlyContinue) -eq $null)
+
 function build($configure, $plat, $config)
 {
 	bash -c "$configure"
@@ -71,10 +92,15 @@ function build($configure, $plat, $config)
 		Write-Error "FAILED $plat $config Configuration"
 	}
 	
-	bash -c "make"
+    $file = "$plat_$($config).txt";
+	bash -c "make V=1" > "$plat_$($config).txt"
 	if(0 -ne $LASTEXITCODE)
 	{
-		Write-Error "FAILED $plat $config Build"
+        $msg = "FAILED $plat $config Configuration"
+        if(-not (log "$plat_$($config)" $false $msg $file))
+        {
+            Write-Error $msg
+        }
 	}
 	
 	collect $plat $config
@@ -126,15 +152,11 @@ function main()
 		
 	build $configure "Win32" "Debug"
 	
-	#WIN32 DEBUG
-	$configure = "./configure --enable-debug --enable-shared --enable-pic --disable-asm --cross-prefix=i686-w64-mingw32- --host=i686-pc-mingw32"
-		
-	build $configure "Win32" "Debug"
 	
 	#WIN32 RELEASE
 	$configure = "./configure --enable-shared --enable-pic --cross-prefix=i686-w64-mingw32- --host=i686-pc-mingw32"
 		
-	build $configure "Win32" "Release"
+    build $configure "Win32" "Release"
 	
 	
 	
