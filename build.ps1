@@ -3,10 +3,14 @@ param(
 	, $mingw32 = "C:\msys64\mingw32"
 	, $mingw64 = "C:\msys64\mingw64"
 	, $src = "./src/x264"
+    , $buildPlatform = "*"
+    , $buildConfiguration = "*"
 )
 
 $ErrorActionPreference = "Stop";
 $my_dir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
+
+"BUILDING $buildPlatform $buildConfiguration" | oh
 
 function add-dir2path($dir)
 {
@@ -86,6 +90,18 @@ function log($name, $success, $msg, $file)
 
 function build($configure, $plat, $config)
 {
+    if(-not ($buildPlatform -eq '*') -or ($buildPlatform -ne $plat))
+    {
+        "Skip platform $plat. Target $buildPlatform" | oh
+        return;
+    }
+
+    if(-not ($buildConfiguration -eq '*') -or ($buildConfiguration -ne $config))
+    {
+        "Skip platform $plat. Target $buildConfiguration" | oh
+        return;
+    }
+
 	bash -c "$configure"
 	if(0 -ne $LASTEXITCODE)
 	{
@@ -100,6 +116,7 @@ function build($configure, $plat, $config)
         if(-not (log "$plat_$($config)" $false $msg $file))
         {
             Write-Error $msg
+            return;
         }
 	}
 	
@@ -111,6 +128,8 @@ function build($configure, $plat, $config)
 	{
 		Write-Warning "FAILED $plat $config Clean"
 	}
+
+    log "$plat_$($config)" $true $msg $file
 }
 
 function main()
