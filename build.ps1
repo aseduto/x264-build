@@ -7,7 +7,7 @@ param(
     , $buildConfiguration = "*"
 )
 
-$ErrorActionPreference = "Stop";
+#$ErrorActionPreference = "Stop";
 $my_dir = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 
 "BUILDING $buildPlatform $buildConfiguration" | oh
@@ -73,7 +73,7 @@ function log($name, $success, $msg, $file)
     if(-not $success)
     {    $outcome = 'Failed'}
 
-    if( (get-command Add-AppveyorTest -ea SilentlyContinue) -eq $null)
+    if( (get-command Add-AppveyorTest -ea SilentlyContinue) -ne $null)
     {
         Push-AppveyorArtifact $file
         Add-AppveyorTest -Name "$name" -Framework 'NUnit' -Filename 'build.ps1' -Outcome $outcome
@@ -81,7 +81,7 @@ function log($name, $success, $msg, $file)
     }
     else
     {
-        msg | oh
+        $msg | oh
         return false;
     }
 }
