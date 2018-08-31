@@ -52,6 +52,12 @@ function collect($plat, $config)
 	
 	$bin = "$target/bin"
 	mdc $bin
+
+    if("Win32" -eq $plat)
+    {
+        cp "$mingw32\bin\libgcc_s_dw2-1.dll" $bin
+        cp "$mingw32\bin\libwinpthread-1.dll" $bin
+    }
 	
 	ls 'libx264*' | foreach{cp $_ $bin}
 	
@@ -109,11 +115,13 @@ function build($configure, $plat, $config)
 	}
 	
     $file = "$($plat)_$($config).txt";
-$ErrorActionPreference = "SilentlyContinue";
+
+$ErrorActionPreference = "Continue";
 	bash -c "make V=1" > $file -ea 
     $BASHEXIT = $LASTEXITCODE
     "MAKE EXIT CODE: $BASHEXIT" | oh
 $ErrorActionPreference = "Stop";
+
 	if(0 -ne $BASHEXIT)
 	{
         $msg = "FAILED $plat $config Configuration"
